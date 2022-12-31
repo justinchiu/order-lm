@@ -1,22 +1,24 @@
 from collections import defaultdict
 from datasets import load_dataset
-import spacy
 
-from tree_utils import find_root, bfs
+#import spacy
+#from tree_utils import bfs
+
+import esupar
+from esupar_utils import bfs
 
 ptb = load_dataset("ptb_text_only")
-nlp = spacy.load("en_core_web_sm")
+#nlp = spacy.load("en_core_web_sm")
+nlp = esupar.load("en")
 
 datadict = {}
 for split, data in ptb.items():
     newdata = defaultdict(list)
     for i, example in enumerate(data):
         # remove periods because spacy has issues with it
-        sentence = example["sentence"].replace(".", "").replace("<unk>", "unk").lower()
+        sentence = example["sentence"]
         doc = nlp(sentence)
-        root = find_root(doc)
-        ordered = bfs(root)
-        order = [x.i for x in ordered]
+        order = bfs(doc)
 
         newdata["sentence"].append(sentence)
         newdata["order"].append(order)
