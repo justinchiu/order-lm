@@ -40,9 +40,13 @@ for i, example in enumerate(ptb["train"]):
     root = find_root(doc)
     #ordering = inorder(root)
     ordering = bfs(root)
+    order = [x.i for x in ordering]
+    oh_order = onehot(order)
+    rel_emb(order)
     if i > 0:
         st.write(root.text, root.i, root.dep_, list(root.children))
         st.write(ordering)
         visualize_parser(doc, displacy_options={"compact":True})
         pdb.set_trace()
+
 
