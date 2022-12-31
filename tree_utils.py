@@ -37,19 +37,16 @@ if __name__ == "__main__":
 
     nlp = spacy.load("en_core_web_sm")
 
-    for i, example in enumerate(ptb["train"]):
-        sentence = example["sentence"].replace(".", "")
-        doc = nlp(sentence)
-        root = find_root(doc)
-        #ordering = inorder(root)
-        ordering = bfs(root)
-        order = [x.i for x in ordering]
-        oh_order = onehot(order)
-        rel_emb(order)
-        if i > 0:
-            st.write(root.text, root.i, root.dep_, list(root.children))
-            st.write(ordering)
-            visualize_parser(doc, displacy_options={"compact":True})
-            pdb.set_trace()
+    data = ptb["train"]
+    example = data[4]
+
+    sentence = example["sentence"].replace(".", "").lower()
+    doc = nlp(sentence)
+    root = find_root(doc)
+    #ordering = bfs(root)
+    st.write(sentence)
+    st.write(root.text, root.i, root.dep_, list(root.children))
+    #st.write(ordering)
+    visualize_parser(doc, displacy_options={"compact":True})
 
 
