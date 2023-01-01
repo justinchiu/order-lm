@@ -3,7 +3,9 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Node:
-    index: int
+    id: str
+    token: str
+    head: str 
     children: list[int] = field(default_factory=list)
 
 
@@ -22,27 +24,37 @@ def construct_graph(doc):
     ri = rels.index("root")
 
     # adjacency list
-    nodes = [Node(int(x)-1) for x in doc.values[0] if "-" not in x]
-    # skip over multi-wordrange , the individual tokens should be included
+    #nodes = [Node(int(x)-1) for x in doc.values[0] if "-" not in x]
+    nodes = {}
+    node2idx = {}
+    idx2node = []
+    for id, tok, head in zip(doc.values[0], doc.values[1], heads):
+        # skip over multi-wordrange , the individual tokens should be included
+        if "-" not in id and tok != "_":
+            node = Node(id, tok, str(head))
+            nodes[id] = node
+            node2idx[id] = len(idx2node)
+            idx2node.append(id)
 
-    for i, h in enumerate(heads):
-        if h > 0:
-            nodes[h-1].children.append(i)
+    # fill in children
+    for node in nodes.values():
+        if node.head != "0":
+            nodes[node.head].children.append(node.id)
 
-    return hi, nodes
+    return nodes[doc.values[0][hi]], nodes, node2idx, idx2node
 
 
 def bfs(doc):
-    L = len(doc.values[0])
-    root, nodes = construct_graph(doc)
-    queue = [nodes[root]]
+    root, nodes, node2idx, idx2node = construct_graph(doc)
+    L = len(idx2node)
+    queue = [root]
     i = 0
     while i < L:
         node = queue[i]
         for child in node.children:
             queue.append(nodes[child])
         i += 1
-    return [x.index for x in queue]
+    return [node2idx[x.id] for x in queue]
 
 if __name__ == "__main__":
     from datasets import load_dataset
@@ -54,8 +66,8 @@ if __name__ == "__main__":
     nlp = esupar.load("en")
 
     data = ptb["train"]
-    example = data[4]
-    sentence = example["sentence"]#.replace(".", "").lower()
+    example = data[1716]
+    sentence = example["sentence"]
     doc = nlp(sentence)
     print(doc)
     import deplacy
