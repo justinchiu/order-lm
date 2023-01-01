@@ -1,4 +1,4 @@
-# tree utils
+# tree utils. deprecated in favor of esupar_utils.py
  
 def find_root(doc):
     # finds the first root...

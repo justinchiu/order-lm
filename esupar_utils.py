@@ -22,7 +22,8 @@ def construct_graph(doc):
     ri = rels.index("root")
 
     # adjacency list
-    nodes = [Node(int(x)-1) for x in doc.values[0]]
+    nodes = [Node(int(x)-1) for x in doc.values[0] if "-" not in x]
+    # skip over multi-wordrange , the individual tokens should be included
 
     for i, h in enumerate(heads):
         if h > 0:

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datasets import load_dataset
+from datasets import load_dataset, Dataset, DatasetDict
 
 #import spacy
 #from tree_utils import bfs
@@ -24,4 +24,7 @@ for split, data in ptb.items():
         newdata["order"].append(order)
 
     datadict[split] = Dataset.from_dict(newdata)
-    import pdb; pdb.set_trace()
+
+newptb = DatasetDict(datadict)
+newptb.save_to_disk("ptb_text_only_order")
+import pdb; pdb.set_trace()
